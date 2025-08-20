@@ -17,6 +17,6 @@ jobs:
             🚀 *Project:* [${{ github.repository }}](https://github.com/${{ github.repository }})
             🛠️ *Release:* `${{ github.event.release.tag_name }}`
             📝 *Changelog:*
-            ${{ github.event.release.body || "_no release changelog_" }}
+            ${{ github.event.release.body || "_No release changelog_" }}
             
             👤 Released by: `${{ github.event.release.author.login }}`
