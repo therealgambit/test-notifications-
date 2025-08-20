@@ -7,28 +7,16 @@ on:
 jobs:
   notify-telegram:
     runs-on: ubuntu-latest
-
     steps:
       - name: Send Telegram Notification
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          TELEGRAM_TOPIC_ID: ${{ secrets.TELEGRAM_TOPIC_ID }}
-        run: |
-          # Кодируем тело релиза в base64
-          RELEASE_BODY_BASE64=$(echo '${{ github.event.release.body }}' | base64)
+        uses: appleboy/telegram-action@v0.1.0
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: |
+            🚀 Project: ${{ github.repository }}
+            🛠️ Release: ${{ github.event.release.tag_name }}
+            📝 Message:
+            ${{ github.event.release.body }}
 
-          # Декодируем обратно в bash-переменную
-          RELEASE_BODY=$(echo "$RELEASE_BODY_BASE64" | base64 --decode)
-
-          MSG="🚀 Project: ${{ github.repository }}
-🛠️ Release: ${{ github.event.release.tag_name }}
-📝 Message:
-$RELEASE_BODY
-
-🔗 Repository: ${{ github.event.repository.html_url }}"
-
-          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
-            -d chat_id="${TELEGRAM_CHAT_ID}" \
-            -d message_thread_id="${TELEGRAM_TOPIC_ID}" \
-            --data-urlencode text="$MSG"
+            🔗 Repository: ${{ github.event.repository.html_url }}
