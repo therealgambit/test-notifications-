@@ -14,21 +14,22 @@ jobs:
 
     steps:
       - name: Send release notification to Telegram
-        shell: bash
-        run: |
-          BODY="${{ github.event.release.body }}"
-          if [ -z "$BODY" ]; then BODY="—"; fi
+  shell: bash
+  run: |
+    BODY="${{ github.event.release.body }}"
+    if [ -z "$BODY" ]; then BODY="—"; fi
 
-          TEXT=$(cat <<EOF
+    TEXT=$(cat <<'EOF'
 🚀 Project: ${{ github.event.repository.name }}
 🛠️ Release : ${{ github.event.release.tag_name }}
 📝 Message:
-$BODY
+__BODY_PLACEHOLDER__
 🔗 Repository: ${{ github.event.repository.html_url }}
 EOF
 )
+    TEXT="${TEXT/__BODY_PLACEHOLDER__/$BODY}"
 
-          curl -s -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
-            -d chat_id="${TG_CHAT_ID}" \
-            -d message_thread_id="${TG_THREAD_ID}" \
-            --data-urlencode text="$TEXT"
+    curl -s -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
+      -d chat_id="${TG_CHAT_ID}" \
+      -d message_thread_id="${TG_THREAD_ID}" \
+      --data-urlencode text="$TEXT"
