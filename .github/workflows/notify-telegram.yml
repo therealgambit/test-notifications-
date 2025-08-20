@@ -8,15 +8,34 @@ jobs:
   notify-telegram:
     runs-on: ubuntu-latest
     steps:
-      - name: Send Telegram Notification
-        uses: appleboy/telegram-action@v0.1.0
-        with:
-          to: ${{ secrets.TELEGRAM_CHAT_ID }}
-          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          message: |
-            🚀 *Project:* [${{ github.repository }}](https://github.com/${{ github.repository }})
-            🛠️ *Release:* ${{ github.event.release.tag_name }}
-            📝 *Message:*
-            ${{ github.event.release.body }}
-            👤 Released by: ${{ github.event.release.author.login }}
-          format: markdown
+      - name: Send Telegram Notification (filtered)
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_TOPIC_ID: ${{ secrets.TELEGRAM_TOPIC_ID }}
+        run: |
+          # Сохраняем тело релиза в файл
+          echo '${{ github.event.release.body }}' > release_body_raw.txt
+
+          # Фильтруем HTML-теги (удаляем строки с <...>)
+          RELEASE_BODY=$(grep -vP '<.*?>' release_body_raw.txt || true)
+
+          # Если пусто, подставляем сообщение-заглушку
+          if [ -z "$RELEASE_BODY" ]; then
+            RELEASE_BODY="No change log text provided."
+          fi
+
+          # Формируем сообщение с Markdown-разметкой
+          MSG="🚀 *Project:* [${{ github.repository }}](https://github.com/${{ github.repository }})
+🛠️ *Release:* \`${{ github.event.release.tag_name }}\`
+📝 *Message:*
+$RELEASE_BODY
+
+👤 Released by: \`${{ github.event.release.author.login }}\`"
+
+          # Отправляем сообщение в Telegram
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d chat_id="${TELEGRAM_CHAT_ID}" \
+            -d message_thread_id="${TELEGRAM_TOPIC_ID}" \
+            -d parse_mode="MarkdownV2" \
+            --data-urlencode text="$MSG"
