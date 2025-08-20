@@ -16,18 +16,18 @@ jobs:
       - name: Send release notification to Telegram
         shell: bash
         run: |
-          # Безопасная подготовка тела релиза (может быть пустым)
           BODY="${{ github.event.release.body }}"
           if [ -z "$BODY" ]; then BODY="—"; fi
 
-          # Формируем текст в вашем формате
-          TEXT="🚀 Project: ${{ github.event.repository.name }}
+          TEXT=$(cat <<EOF
+🚀 Project: ${{ github.event.repository.name }}
 🛠️ Release : ${{ github.event.release.tag_name }}
 📝 Message:
 $BODY
-🔗 Repository: ${{ github.event.repository.html_url }}"
+🔗 Repository: ${{ github.event.repository.html_url }}
+EOF
+)
 
-          # Отправляем в конкретный топик группы
           curl -s -X POST "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
             -d chat_id="${TG_CHAT_ID}" \
             -d message_thread_id="${TG_THREAD_ID}" \
