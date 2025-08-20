@@ -14,9 +14,9 @@ jobs:
           to: ${{ secrets.TELEGRAM_CHAT_ID }}
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           message: |
-            🚀 Project: ${{ github.repository }}
-            🛠️ Release: ${{ github.event.release.tag_name }}
-            📝 Message:
-            ${{ github.event.release.body }}
-
-            🔗 Repository: ${{ github.event.repository.html_url }}
+            🚀 *Project:* [${{ github.repository }}](https://github.com/${{ github.repository }})
+            🛠️ *Release:* `${{ github.event.release.tag_name }}`
+            📝 *Changelog:*
+            ${{ github.event.release.body || "_no release changelog_" }}
+            
+            👤 Released by: `${{ github.event.release.author.login }}`
