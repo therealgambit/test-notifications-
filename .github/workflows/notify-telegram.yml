@@ -8,6 +8,18 @@ jobs:
   notify-telegram:
     runs-on: ubuntu-latest
     steps:
+      # Отладочный шаг: вывести в лог переменные из секретов
+      - name: Debug print Telegram secrets
+        env:
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TOPIC_ID: ${{ secrets.TELEGRAM_TOPIC_ID }}
+        run: |
+          echo "TELEGRAM_TOKEN=${TELEGRAM_TOKEN}"
+          echo "CHAT_ID=${CHAT_ID}"
+          echo "TOPIC_ID=${TOPIC_ID}"
+
+      # Шаг с отправкой уведомления
       - name: Send Telegram Notification
         uses: appleboy/telegram-action@v0.1.0
         with:
