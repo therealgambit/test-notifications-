@@ -27,7 +27,7 @@ jobs:
 
           # Формируем сообщение с Markdown-разметкой
           MSG="🚀 *Project:* [${{ github.repository }}](https://github.com/${{ github.repository }})
-🛠️ *Release:* \`${{ github.event.release.tag_name }}\`
+🛠️ *Release:* ${{ github.event.release.tag_name }}
 📝 *Message:*
 $RELEASE_BODY
 
