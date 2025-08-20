@@ -8,10 +8,23 @@ jobs:
   notify-telegram:
     runs-on: ubuntu-latest
     steps:
-      - name: Send Telegram Notification
+      - name: Send Telegram Notification to Chat 1
         uses: appleboy/telegram-action@v0.1.0
         with:
-          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          to: ${{ secrets.TELEGRAM_CHAT_ID_1 }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: |
+            🚀 *Project:* [${{ github.repository }}](https://github.com/${{ github.repository }})
+            🛠️ *Release:* ${{ github.event.release.tag_name }}
+            📝 *Changelog:*
+            ${{ github.event.release.body }}
+            👤 Released by: [${{ github.event.release.author.login }}](https://github.com/distillium)
+          format: markdown
+
+      - name: Send Telegram Notification to Chat 2
+        uses: appleboy/telegram-action@v0.1.0
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID_2 }}
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           message: |
             🚀 *Project:* [${{ github.repository }}](https://github.com/${{ github.repository }})
